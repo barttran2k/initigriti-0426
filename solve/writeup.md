@@ -343,4 +343,3 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Geck
 ## Screenshots
 
 ![Challenge Page](screenshots/02-challenge-page.png)
-![Exploit Page](screenshots/03-exploit-page.png)
