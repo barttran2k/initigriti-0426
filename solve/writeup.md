@@ -343,3 +343,4 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Geck
 ## Screenshots
 
 ![Challenge Page](screenshots/02-challenge-page.png)
+![XSS Trigger](screenshots/01-xss-alert-fired.png)
